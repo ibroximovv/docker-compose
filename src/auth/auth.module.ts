@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { MailService } from 'src/mail/mail.service';
 import { JwtModule } from '@nestjs/jwt';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   controllers: [AuthController],
@@ -10,6 +11,10 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [JwtModule.register({
     global: true,
     secret: 'nima'
-  })]
+  }),
+  CacheModule.register({
+    isGlobal: true
+  })
+  ]
 })
 export class AuthModule {}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -7,6 +7,7 @@ import { AuthorizationGuard } from 'src/authorization/authorization.guard';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/common/roles.decorator';
 import { UserRole } from '@prisma/client';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('product')
 export class ProductController {
@@ -20,11 +21,17 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(10000)
+  @CacheKey('prd')
   @Get()
   findAll(@Query() query: GetProductDto) {
     return this.productService.findAll(query);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(10000)
+  @CacheKey('prd-one')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
